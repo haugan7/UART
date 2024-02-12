@@ -1,0 +1,48 @@
+00:27:53 **** Auto Build of configuration Debug for project highspeed_link_HSL ****
+make pre-build main-build 
+a9-linaro-pre-build-step
+' '
+'Building file: ../src/HSL/V7_0/HSL_prot_slave.c'
+'Invoking: ARM v7 g++ compiler'
+arm-none-eabi-g++ -DFULL -DARM_A9 -DHAS_BASIC_FAULT_LOG_IF_CAPABILITY -DHAS_RUN_INHIBIT_SUPPORT -DHAS_STRNLEN -DHAS_DIGSCOPE_CAPABILITY -Wall -O0 -g3 -I"C:\DMA_HSL\SDK\highspeed_link_HSL\src\Objects" -I"C:\DMA_HSL\SDK\highspeed_link_HSL\src\EEPROM" -I"C:\DMA_HSL\SDK\highspeed_link_HSL\src" -I"C:\DMA_HSL\SDK\highspeed_link_HSL\src\Sys" -I"C:\DMA_HSL\SDK\highspeed_link_HSL\src\HSL\V7_0" -I"C:\DMA_HSL\SDK\highspeed_link_HSL\src\HSL\HSL_port" -I"C:\DMA_HSL\SDK\highspeed_link_HSL\src\HSL\HSL_SW" -I"C:\DMA_HSL\SDK\HSL_bsp\ps7_cortexa9_1\include" -I"C:\Programming\TSW_SW\src" -I"C:\Programming\TSW_SW\include" -c -fmessage-length=0 -MT"src/HSL/V7_0/HSL_prot_slave.o" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -I../../HSL_bsp/ps7_cortexa9_1/include -MMD -MP -MF"src/HSL/V7_0/HSL_prot_slave.d" -MT"src/HSL/V7_0/HSL_prot_slave.o" -o "src/HSL/V7_0/HSL_prot_slave.o" "../src/HSL/V7_0/HSL_prot_slave.c"
+../src/HSL/V7_0/HSL_prot_slave.c: In function 'void SynchronizeSlave_New(HSL_Slave_Obj_Struct*)':
+../src/HSL/V7_0/HSL_prot_slave.c:918:51: warning: integer overflow in expression of type 'int' results in '705032704' [-Woverflow]
+ #define PLL_ERROR_TOL ((HSL_PLL_ERROR_TOLERANCE_NS*(HSL_BUS_TIMESTAMP_REF_CLOCK_FREQUENCY/1000))/1000000)
+../src/HSL/V7_0/HSL_prot_slave.c:983:38: note: in expansion of macro 'PLL_ERROR_TOL'
+   if((pSlaveObj->LockingError < (int)PLL_ERROR_TOL) && (pSlaveObj->LockingError > -(int)PLL_ERROR_TOL)){
+                                      ^~~~~~~~~~~~~
+../src/HSL/V7_0/HSL_prot_slave.c:918:51: warning: integer overflow in expression of type 'int' results in '705032704' [-Woverflow]
+ #define PLL_ERROR_TOL ((HSL_PLL_ERROR_TOLERANCE_NS*(HSL_BUS_TIMESTAMP_REF_CLOCK_FREQUENCY/1000))/1000000)
+../src/HSL/V7_0/HSL_prot_slave.c:983:89: note: in expansion of macro 'PLL_ERROR_TOL'
+   if((pSlaveObj->LockingError < (int)PLL_ERROR_TOL) && (pSlaveObj->LockingError > -(int)PLL_ERROR_TOL)){
+                                                                                         ^~~~~~~~~~~~~
+../src/HSL/V7_0/HSL_prot_slave.c: In function 'void HSL_Slave_LowPriorityTask(uint32_t)':
+../src/HSL/V7_0/HSL_prot_slave.c:1095:14: warning: unused variable 'out' [-Wunused-variable]
+   BaseType_t out = HSL_SDO_CheckAndReply_New(pSlaveObj);
+              ^~~
+In file included from C:\DMA_HSL\SDK\highspeed_link_HSL\src\HSL\HSL_port/HS_link_port.h:11,
+                 from ../src/HSL/V7_0/HSL_prot_slave.c:12:
+C:\DMA_HSL\SDK\highspeed_link_HSL\src\HSL\HSL_port/dma_port.h: At global scope:
+C:\DMA_HSL\SDK\highspeed_link_HSL\src\HSL\HSL_port/dma_port.h:47:83: warning: 'dma_instance' defined but not used [-Wunused-variable]
+ [[gnu::section(".dma_mem")]][[gnu::aligned(XAXIDMA_BD_ALIGNMENT)]] static XAxiDma dma_instance[FIBER_DMA_NUM_INSTANCES];
+                                                                                   ^~~~~~~~~~~~
+../src/HSL/V7_0/HSL_prot_slave.c: In function 'BaseType_t HSL_SDO_CheckAndReply_New(HSL_Slave_Obj_Struct*)':
+../src/HSL/V7_0/HSL_prot_slave.c:677:26: warning: 'pInfo' may be used uninitialized in this function [-Wmaybe-uninitialized]
+      GetObjectInfoByIndex(Index[ii], pInfo);
+      ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~
+'Finished building: ../src/HSL/V7_0/HSL_prot_slave.c'
+' '
+'Building target: highspeed_link_HSL.elf'
+'Invoking: ARM v7 g++ linker'
+arm-none-eabi-g++ -L"C:\DMA_HSL\SDK\HSL_bsp\ps7_cortexa9_1\lib" -L"C:\Programming\TSW_SW\lib" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -Wl,-build-id=none -specs=Xilinx.spec -Wl,-T -Wl,../src/lscript.ld -L../../HSL_bsp/ps7_cortexa9_1/lib -o "highspeed_link_HSL.elf"  ./src/Sys/common_objects.o ./src/Sys/system_framework.o  ./src/Objects/DictionaryFunctions.o ./src/Objects/ObjDictionary.o ./src/Objects/Object_Functions.o ./src/Objects/Object_lists.o ./src/Objects/object_list_functions.o  ./src/HSL/V7_0/HSL_Slave.o ./src/HSL/V7_0/HSL_prot_slave.o ./src/HSL/V7_0/HSL_slave_objects.o  ./src/HSL/HSL_port/HS_link_port.o ./src/HSL/HSL_port/dma_port.o  ./src/HSL/HSL_SW/HS_link_control_msg_contained_format.o ./src/HSL/HSL_SW/HS_link_slave_message_routines.o  ./src/EEPROM/parameter_storage_functions.o  ./src/CommInterface.o ./src/Exception.o ./src/main.o ./src/pwm.o ./src/sinusgen_object.o   -lwtcp_arm_a9_full -Wl,--start-group,-lxil,-lgcc,-lc,-lstdc++,--end-group
+'Finished building target: highspeed_link_HSL.elf'
+' '
+'Invoking: ARM v7 Print Size'
+arm-none-eabi-size highspeed_link_HSL.elf  |tee "highspeed_link_HSL.elf.size"
+   text	   data	    bss	    dec	    hex	filename
+ 185796	 231900	16823056	17240752	10712b0	highspeed_link_HSL.elf
+'Finished building: highspeed_link_HSL.elf.size'
+' '
+
+00:27:57 Build Finished (took 3s.734ms)
+

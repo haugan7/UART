@@ -1,0 +1,509 @@
+
+#include "dma_port.h"
+
+
+
+/*****************************************************************************
+* Initializes the DMA port
+* Allocates and configures the device instance, and configures the hardware
+*
+* @param IsBus_Master:			1: Master 0: Slave. Selects whether fifo arrays for master or slave is used
+* @param dma_instance_p:  		Pointer to DMA instance struct
+* @param device_id:				Master or slave device ID number
+* @param hw_id:					Hardware device ID number
+*
+* @returns XST_FAILURE if failed, XST_SUCCESS when OK
+*****************************************************************************/
+int DMA_port_init(uint32_t device_id)
+{
+	//xil_printf("DMA_port_init\r\n");
+	XAxiDma_Config* 	dma_hw_config_p;
+
+	volatile XAxiDma_Bd* dma_tx_bd_p;
+	volatile XAxiDma_Bd* dma_rx_bd_p;
+	volatile uint32_t* tx_buf_p;
+	volatile uint32_t* rx_buf_p;
+	int no_of_rx_buf;
+	int no_of_tx_buf;
+	int	buf_size;
+
+	int status;
+
+	status = PORT_ACCESS_FAILURE;
+
+	if(device_id < FIBER_DMA_NUM_INSTANCES){
+		dma_tx_bd_p	= &dma_tx_buffer_descriptor[device_id][0];
+		dma_rx_bd_p	= &dma_rx_buffer_descriptor[device_id][0];
+		rx_buf_p 	= &dma_rx_buf[device_id][0][0];
+		tx_buf_p 	= NULL;
+
+		no_of_rx_buf = NO_OF_HSL_RX_BUFFERS;
+		no_of_tx_buf = NO_OF_HSL_TX_BUFFERS;
+		buf_size = HSL_BUFFER_SIZE;
+	}
+	else {
+		return PORT_ACCESS_FAILURE;
+	}
+
+
+	dma_hw_config_p = XAxiDma_LookupConfig(device_id); // Fetches config data
+	if(!dma_hw_config_p){
+		//xil_printf("No config found for %d\r\n", device_id);
+		return XST_FAILURE;
+	}
+
+	/* Initialize DMA engine */
+	status = XAxiDma_CfgInitialize(&dma_instance[device_id], dma_hw_config_p);	// Initialize DMA engine
+	if(status != XST_SUCCESS){
+		//xil_printf("Initialization failed %d\r\n", status);
+		return XST_FAILURE;
+	}
+
+	if(!XAxiDma_HasSg(&dma_instance[device_id])){
+		//xil_printf("Device configured as Simple mode \r\n");
+		return XST_FAILURE;
+	}
+
+	status = TxSetup(device_id, dma_tx_bd_p, tx_buf_p, no_of_tx_buf, buf_size);
+	if(status != XST_SUCCESS){
+		return status;
+	}
+	//xil_printf("TxSetup OK\r\n");
+
+	status = RxSetup(device_id, dma_rx_bd_p, rx_buf_p, no_of_rx_buf, buf_size);
+	if(status != XST_SUCCESS){
+		return XST_FAILURE;
+	}
+	//xil_printf("RxSetup OK\r\n");
+
+	//xil_printf("------- SUMMARY RX BUFFERS  ---------------\r\n");
+	//xil_printf("dma_rx_bd_p = 0x%x\r\n", dma_rx_bd_p);
+	//xil_printf("rx_buf_p = 0x%x\r\n", rx_buf_p);
+	//xil_printf("no_of_rx_buf = %d\r\n", no_of_rx_buf);
+	//xil_printf("buf_size = %d\r\n", buf_size);
+	//xil_printf("------- SUMMARY TX BUFFERS  ---------------\r\n");
+	//xil_printf("dma_tx_bd_p = 0x%x\r\n", dma_tx_bd_p);
+	//xil_printf("tx_buf_p = 0x%x\r\n", tx_buf_p);
+	//xil_printf("no_of_tx_buf = %d\r\n", no_of_tx_buf);
+	//xil_printf("buf_size = %d\r\n", buf_size);
+	//xil_printf("-----------------------------------\r\n");
+	return PORT_OPERATION_OK;
+}
+
+/*****************************************************************************
+* Prepares dma buffer instance, individual buffer descriptors, attaches receive buffers to each buffer descriptor.
+*
+* @param device_id:  		  		Pointer to DMA instance struct.
+* @param rx_buffer_descriptor_p: 	Pointer to start of array of buffer descriptors
+* @param rx_data_buffer_p:			Pointer to start of array of buffer arrays.
+* @param N_of_rx_buffers:			Number of buffers, size of buffer derscriptor and buffer arrays.
+* @param rx_buffer_size:	      	Number of words in each buffer. (words, not byte)
+*
+* @returns XST_FAILURE if failed, XST_SUCCESS when OK
+**************************************************************************/
+int RxSetup(
+		uint32_t device_id,
+		volatile XAxiDma_Bd* rx_buffer_descriptor_p,
+		volatile uint32_t* rx_data_buffer_p,
+		int N_of_rx_buffers,
+		int rx_buffer_size)
+{
+	XAxiDma_BdRing *RxRingPtr;
+	int Delay = 0;
+	int Coalesce = 1;
+	int Status;
+	XAxiDma_Bd BdTemplate;
+	XAxiDma_Bd *BdPtr;
+	XAxiDma_Bd *BdCurPtr;
+	int buffer_size_bytes;
+
+	UINTPTR RxBufferPtr;
+	UINTPTR BufferPtr;
+
+	RxRingPtr = XAxiDma_GetRxRing(&dma_instance[device_id]);
+
+	XAxiDma_BdRingIntDisable(RxRingPtr, XAXIDMA_IRQ_ALL_MASK);
+	XAxiDma_BdRingSetCoalesce(RxRingPtr, Coalesce, Delay);
+	XAxiDma_SelectCyclicMode(&dma_instance[device_id], XAXIDMA_DEVICE_TO_DMA, TRUE);
+
+	/* Setup Rx BD space */
+	Status = XAxiDma_BdRingCreate(RxRingPtr, (UINTPTR)rx_buffer_descriptor_p,
+			(UINTPTR)rx_buffer_descriptor_p,
+			XAXIDMA_BD_MINIMUM_ALIGNMENT, N_of_rx_buffers);
+
+	if(Status != XST_SUCCESS){
+		//xil_printf("RX create BD ring failed %d\r\n", Status);
+		return XST_FAILURE;
+	}
+
+	XAxiDma_BdClear(&BdTemplate);
+
+	Status = XAxiDma_BdRingClone(RxRingPtr, &BdTemplate);
+	if(Status != XST_SUCCESS){
+		//xil_printf("RX clone BD failed %d\r\n", Status);
+		return XST_FAILURE;
+	}
+	//xil_printf("FreeBdCount = %d", XAxiDma_BdRingGetFreeCnt(RxRingPtr));
+	Status = XAxiDma_BdRingAlloc(RxRingPtr, N_of_rx_buffers, &BdPtr);
+	if(Status != XST_SUCCESS){
+		//xil_printf("RX alloc BD failed %d\r\n", Status);
+		return XST_FAILURE;
+	}
+	buffer_size_bytes = rx_buffer_size * sizeof(uint32_t);
+	BdCurPtr = BdPtr;
+	RxBufferPtr = (UINTPTR) rx_data_buffer_p;
+	for (int idx = 0; idx < N_of_rx_buffers; idx++) {
+		BufferPtr = (UINTPTR)(rx_data_buffer_p + rx_buffer_size * idx);
+		Status = XAxiDma_BdSetBufAddr(BdCurPtr, BufferPtr);
+
+		if(Status != XST_SUCCESS){
+			/*xil_printf("Set buffer addr %x on BD %x failed %d\r\n",
+			    (unsigned int)RxBufferPtr,
+			    (UINTPTR)BdCurPtr, Status);*/
+			return XST_FAILURE;
+		}
+
+		////xil_printf("RxRingPtr->MaxTransferLen = %d\r\n", RxRingPtr->MaxTransferLen);
+		Status = XAxiDma_BdSetLength(BdCurPtr, buffer_size_bytes, RxRingPtr->MaxTransferLen);
+		if(Status != XST_SUCCESS){
+			/*xil_printf("Rx set length %d on BD %x failed %d\r\n",
+					buffer_size_bytes, (UINTPTR)BdCurPtr, Status);*/
+			return XST_FAILURE;
+		}
+
+		/* Receive BDs do not need to set anything for the control
+		 * The hardware will set the SOF/EOF bits per stream status */
+		XAxiDma_BdSetCtrl(BdCurPtr, 0);
+		XAXIDMA_CACHE_FLUSH(BdCurPtr); // Flush buffer descriptor
+		memset((void*) BufferPtr, 0, buffer_size_bytes);
+
+		BdCurPtr = (XAxiDma_Bd*) XAxiDma_BdRingNext(RxRingPtr, BdCurPtr);
+	}
+
+	Status = XAxiDma_BdRingToHw(RxRingPtr, N_of_rx_buffers, BdPtr);
+	if(Status != XST_SUCCESS){
+		//xil_printf("RX submit hw failed %d\r\n", Status);
+		return XST_FAILURE;
+	}
+
+	/* Start RX DMA channel */
+	Status = XAxiDma_BdRingStart(RxRingPtr);
+	if(Status != XST_SUCCESS){
+		//xil_printf("RX start hw failed %d\r\n", Status);
+		return XST_FAILURE;
+	}
+
+	//xil_printf("RxSetup::RxRingPtr = 0x%x 0x%x\r\n", RxRingPtr, *RxRingPtr);
+	return XST_SUCCESS;
+}
+
+/*****************************************************************************
+* Prepares dma buffer instance, individual buffer descriptors.
+* Transmit buffers are not attached here, as this is done for each packet transmission.
+*
+* @param dma_instance_p:  		  Pointer to DMA instance struct.
+* @param dma_buffer_descriptor_p: Pointer to start of array of buffer descriptors
+* @param no_of_buffers:			  Number of buffers, size of buffer derscriptor and buffer arrays.
+*
+* @returns XST_FAILURE if failed, XST_SUCCESS when OK
+*****************************************************************************/
+int TxSetup(
+		uint32_t device_id,
+		volatile XAxiDma_Bd* tx_buffer_descriptor_p,
+		volatile uint32_t* tx_data_buffer_p,
+		int N_of_tx_buffers,
+		int tx_buffer_size)
+{
+	XAxiDma_BdRing *TxRingPtr;
+	XAxiDma_Bd BdTemplate;
+	int Delay = 0;
+	int Coalesce = 1;
+	int Status;
+
+	TxRingPtr = XAxiDma_GetTxRing(&dma_instance[device_id]);
+
+	XAxiDma_BdRingIntDisable(TxRingPtr, XAXIDMA_IRQ_ALL_MASK);
+	XAxiDma_BdRingSetCoalesce(TxRingPtr, Coalesce, Delay);
+	XAxiDma_SelectCyclicMode(&dma_instance[device_id], XAXIDMA_DMA_TO_DEVICE, TRUE);
+	/* Setup TxBD space  */
+	Status = XAxiDma_BdRingCreate(TxRingPtr, (UINTPTR) tx_buffer_descriptor_p,
+			(UINTPTR) tx_buffer_descriptor_p,
+			XAXIDMA_BD_MINIMUM_ALIGNMENT, N_of_tx_buffers);
+
+	if(Status != XST_SUCCESS){
+		//xil_printf("failed create BD ring in txsetup\r\n");
+		return XST_FAILURE;
+	}
+
+	/* We create an all-zero BD as the template */
+	XAxiDma_BdClear(&BdTemplate);
+
+	Status = XAxiDma_BdRingClone(TxRingPtr, &BdTemplate);
+	if(Status != XST_SUCCESS){
+		//xil_printf("failed bdring clone in txsetup %d\r\n", Status);
+		return XST_FAILURE;
+	}
+
+	/* Start the TX channel */
+	Status = XAxiDma_BdRingStart(TxRingPtr);
+	if(Status != XST_SUCCESS){
+		//xil_printf("failed start bdring txsetup %d\r\n", Status);
+		return XST_FAILURE;
+	}
+	//xil_printf("TxSetup::TxRingPtr = 0x%x 0x%x\r\n", TxRingPtr, *TxRingPtr);
+	return XST_SUCCESS;
+}
+
+/*****************************************************************************
+* Sends a packet to the DMA.
+* NB! TX data must be aligned with cache line length. Size must be a multiple of XAXIDMA_BUFFER_ALIGNMENT.
+*     If not cache operations will fail.
+*
+* @param dma_instance_p:  	Pointer to DMA instance struct.
+* @paramtx_buf_p:			Pointer to data array that are going to be transmitted.
+* @param packet_size:		No of words to transfer. (int, not bytes.)
+*
+* @returns XST_FAILURE if failed, XST_SUCCESS when OK
+******************************************************************************/
+int SendPacket(
+		uint32_t dma_port_device_id,
+		volatile uint32_t* tx_data_p,
+		uint32_t packet_size)
+{
+	//xil_printf("\t\t\t\t\t DMA SendPacket\r\n");
+	XAxiDma_BdRing *TxRingPtr;
+	XAxiDma_Bd *BdPtr;
+	int Status;
+	int packet_size_bytes = packet_size * sizeof(uint32_t);
+	int n;
+
+	TxRingPtr = XAxiDma_GetTxRing(&dma_instance[dma_port_device_id]);
+
+	n = XAxiDma_BdRingFromHw(TxRingPtr, XAXIDMA_ALL_BDS, &BdPtr);
+	XAxiDma_BdRingFree(TxRingPtr, n, BdPtr);
+
+	Status = XAxiDma_BdRingAlloc(TxRingPtr, 1, &BdPtr);
+	if(Status != XST_SUCCESS){
+		return PACKET_TRANSFER_FAILURE; // no buffer available.
+	}
+
+	/* Set up the BD using the information of the packet to transmit */
+	//xil_printf("\r\nSending Tx Data to AXI Stream FIFO FROM DDR 0x%x\r\n", (UINTPTR) tx_data_p);
+	Status = XAxiDma_BdSetBufAddr(BdPtr, (UINTPTR) tx_data_p);
+	if(((int)tx_data_p & (XAXIDMA_BUFFER_ALIGNMENT-1)) != 0){
+		return PACKET_TRANSFER_FAILURE; // Transmit data not aligned to XAXIDMA_BUFFER_ALIGNMENT. Cache flush will fail.
+	}
+	if(Status != XST_SUCCESS){
+		//xil_printf("TX set buffer addr 0x%x on BD 0x%x failed %d\r\n",
+		 //   (UINTPTR)tx_data_p, (UINTPTR)BdPtr, Status);
+
+		return XST_FAILURE;
+	}
+
+	/* Flush the SrcBuffer before DMA transfer, in case Data Cache is enabled */
+	Xil_DCacheFlushRange((UINTPTR) tx_data_p, packet_size_bytes);
+
+	//xil_printf("TxRingPtr->MaxTransferLen = %d\r\n\n", TxRingPtr->MaxTransferLen);
+	Status = XAxiDma_BdSetLength(BdPtr, packet_size_bytes, TxRingPtr->MaxTransferLen);
+	if(Status != XST_SUCCESS){
+		//xil_printf("TX set length %d on BD %x failed %d\r\n",
+		  //  N32BITWORDS, (UINTPTR)BdPtr, Status);
+
+		return XST_FAILURE;
+	}
+
+	/* For single packet, both SOF and EOF are to be set */
+	XAxiDma_BdSetCtrl(BdPtr, XAXIDMA_BD_CTRL_TXEOF_MASK | XAXIDMA_BD_CTRL_TXSOF_MASK);
+	XAXIDMA_CACHE_FLUSH(BdPtr);	// Flush buffer descriptors
+
+	/* Give the BD to DMA to kick off the transmission. */
+	Status = XAxiDma_BdRingToHw(TxRingPtr, 1, BdPtr);
+	if (Status != XST_SUCCESS) {
+		//xil_printf("to hw failed %d\r\n", Status);
+
+		return PACKET_TRANSFER_FAILURE;
+	}
+
+	//xil_printf("XAxiDma_BdGetActualLength = %d\r\n", XAxiDma_BdGetActualLength(TxRingPtr, TxRingPtr->MaxTransferLen));
+	return PORT_OPERATION_OK;
+}
+
+
+/****************************************************************************
+* Reads received packets, calls a packet handler routine for each packet that has been received.
+* Frees buffers afterwards.
+*
+* @param dma_instance_p:  	Pointer to DMA instance struct.
+* @param rx_handler_inst_p:			 	Pointer to the instance struct for the unit where the processed data is going to be delivered.
+* @param rx_packet_handler_routine_p:	 	Pointer to the routine that delivers the received data to the final destination.
+*
+* @return XST_FAILURE if failed, XST_SUCCESS when OK
+****************************************************************************/
+int ReceivePacket(
+		uint32_t dma_port_device_id,
+		void* rx_handler_inst_p,
+		int (*rx_packet_handler_routine_p)(void* rx_handler_inst_p, uint32_t* rx_buf_p, uint32_t packet_size))
+{
+
+	//xil_printf("\t\t\t\t\t DMA ReceivePacket\r\n");
+	XAxiDma_BdRing *RingPtr;
+	XAxiDma_Bd *BdstartPtr;
+	XAxiDma_Bd *BdPtr;
+	int n;
+	int bufsize;
+	int FreeBdCount;
+	int Status;
+
+	int op_status;
+
+	uint32_t* rx_buf_p;
+	uint32_t packet_size_byte;
+	uint32_t packet_size;
+
+	Status = PORT_OPERATION_OK;
+	////xil_printf("inside RxPacket 1 :: dma_rx_buf = 0x%x\r\n", dma_rx_buf);
+	if(rx_packet_handler_routine_p == NULL){
+		return PACKET_TRANSFER_FAILURE;
+	}
+
+	RingPtr = XAxiDma_GetTxRing(&dma_instance[dma_port_device_id]);
+	/*//xil_printf("TX :: %d %d %d %d : %d %d %d %d\r\n", RingPtr->FreeCnt, RingPtr->PreCnt, RingPtr->HwCnt, RingPtr->PostCnt,
+			XAxiDma_BdRingGetError(RingPtr), XAxiDma_BdRingBusy(RingPtr), XAxiDma_BdRingCheck(RingPtr),
+			XAxiDma_BdHwCompleted(RingPtr));*/
+
+	RingPtr = XAxiDma_GetRxRing(&dma_instance[dma_port_device_id] );
+	/*//xil_printf("RX :: %d %d %d %d : %d %d %d %d\r\n", RingPtr->FreeCnt, RingPtr->PreCnt, RingPtr->HwCnt, RingPtr->PostCnt,
+			XAxiDma_BdRingGetError(RingPtr), XAxiDma_BdRingBusy(RingPtr), XAxiDma_BdRingCheck(RingPtr),
+			XAxiDma_BdHwCompleted(RingPtr));*/
+
+	n = XAxiDma_BdRingFromHw(RingPtr, XAXIDMA_ALL_BDS, &BdPtr);
+	BdstartPtr = BdPtr;
+	////xil_printf("AVAILABLE BF = %d .. RingPtr/BdPtr = 0x%x/0x%x\r\n", n, RingPtr, &BdPtr);
+
+	////xil_printf("DMA_SR_TX = 0x%x\r\n", XAxiDma_In32(0x40410000+XAXIDMA_SR_OFFSET));
+	////xil_printf("DMA_SR_RX = 0x%x\r\n", XAxiDma_In32(0x40410000+XAXIDMA_RX_OFFSET+XAXIDMA_SR_OFFSET));
+	for(int idx = 0; idx < n; idx++){
+		XAXIDMA_CACHE_INVALIDATE(BdPtr);	// Invalidates buffer descriptors
+		rx_buf_p = (uint32_t*) XAxiDma_BdGetBufAddr(BdPtr);
+
+		packet_size_byte = XAxiDma_BdGetActualLength(BdPtr, DMA_MAX_TRANSFER_LENGTH);
+		/*
+		#warning "strange error here: Packet size is not right, Actual length register reports one AXIS-word less than actually transferred. "
+		// The first packet after reset har correct length, while all the rest is reported to have one AXIS-word less than the actual received data.
+		// This error seems to occur only when AXI bus is wider than the AXI bus.
+
+		// If AXIS and AXI bus have equal length and/or data realignment is not used the packet size seem to be right.
+		packet_size_byte = 	packet_size_byte + 4;  //  Workaround.
+		*/
+
+		// Invalidate the receive buffer cache before reading the data. Ensures that data is read from memory.
+		bufsize = XAxiDma_BdGetLength(BdPtr, DMA_MAX_TRANSFER_LENGTH);
+		Xil_DCacheInvalidateRange((UINTPTR)rx_buf_p, bufsize);
+
+		// Calls the routine that reads the received package.
+		packet_size = packet_size_byte / sizeof(uint32_t);
+
+		op_status = 77;
+		////xil_printf("PRE op_status = %d\r\n", op_status);
+		op_status = rx_packet_handler_routine_p(rx_handler_inst_p, rx_buf_p, packet_size);
+		////xil_printf("POST op_status = %d\r\n", op_status);
+
+		if(op_status != PORT_OPERATION_OK){ // Reports if any if the loop rx packet handler calls failed.
+			Status = op_status;
+		}
+		BdPtr = (XAxiDma_Bd*) XAxiDma_BdRingNext(RingPtr, BdPtr);
+	}
+
+	// Free all processed RX BDs for future transmission
+	op_status = XAxiDma_BdRingFree(RingPtr, n, BdstartPtr);
+	if(op_status != XST_SUCCESS){
+		return PACKET_TRANSFER_FAILURE;
+	}
+
+	// Return processed BDs to RX channel so we are ready to receive new packets:
+	// Allocate all free RX BDs - Pass the BDs to RX channel
+	FreeBdCount = XAxiDma_BdRingGetFreeCnt(RingPtr);
+	if(FreeBdCount > 0){
+		op_status = XAxiDma_BdRingAlloc(RingPtr, FreeBdCount, &BdstartPtr);
+		if(op_status != XST_SUCCESS){
+			return PACKET_TRANSFER_FAILURE;
+		}
+		op_status = XAxiDma_BdRingToHw(RingPtr, FreeBdCount, BdstartPtr);
+		if(op_status != XST_SUCCESS){
+			return PACKET_TRANSFER_FAILURE;
+		}
+	}
+	////xil_printf("inside RxPacket 3\r\n");
+	return Status;
+}
+
+
+/* Xilinx DMA Example based on demo from BSP
+* Relies on a AXIS_FIFO_DATA IP Core to create loopback for DMA Engine.
+* Nice to use when validating the inner working of DMA.
+* Later replace with data streams from Xilinx Aurora.
+*/
+int dma_packet_handler(void* obj_inst_p, uint32_t* message, uint32_t packet_size)
+{
+	XAxiDma_BdRing *TxRingPtr;
+	XAxiDma_Bd *BdPtr;
+	int ProcessedBdCount;
+	int Status;
+
+	//xil_printf("\n\n-------->> HELLO from Rx Packet Handler <<----------\r\n");
+	//xil_printf("message = 0x%x\r\n", message);
+	TxRingPtr = XAxiDma_GetTxRing(&dma_instance[0]);
+	//xil_printf("TxRingPtr = 0x%x\r\n", TxRingPtr);
+
+	//xil_printf("Wait for DMA Core to release BD-Ring...\r\n");
+	//xil_printf("TxRingPtr->Length = %d\r\n", TxRingPtr->Length);
+
+	//xil_printf("ProcessedBdCount PRE = %d\r\n", ProcessedBdCount);
+
+	//xil_printf("\r\n\t\tRx Data Buffer AFTER\r\n");
+	for(int idx = 0; idx < N32BITWORDS; idx++)
+		//xil_printf("\r\nChecking RxPointer in ADR::DATA = 0x%x 0x%x", &dma_rx_buf[0][0][idx], dma_rx_buf[0][0][idx]);
+	//xil_printf("\r\n");
+
+	/* Wait until the one BD TX transaction is done
+	while ((ProcessedBdCount = XAxiDma_BdRingFromHw(TxRingPtr,
+						       XAXIDMA_ALL_BDS,
+						       &BdPtr)) == 0) {
+	}*/
+	ProcessedBdCount = XAxiDma_BdRingFromHw(TxRingPtr,
+							       XAXIDMA_ALL_BDS,
+							       &BdPtr);
+	//xil_printf("ProcessedBdCount POST = %d\r\n", ProcessedBdCount);
+
+	//xil_printf("\r\n\tTXProcessedBdCount == %d\r\n", ProcessedBdCount);
+	/* Free all processed TX BDs for future transmission */
+	Status = XAxiDma_BdRingFree(TxRingPtr, ProcessedBdCount, BdPtr);
+	if (Status != XST_SUCCESS) {
+		//xil_printf("Failed to free %d tx BDs %d\r\n",
+		  //  ProcessedBdCount, Status);
+		return XST_FAILURE;
+	}
+
+
+	/* Invalidate the DestBuffer before receiving the data, in case the Data Cache is enabled */
+	Xil_DCacheInvalidateRange((UINTPTR)message, N32BITWORDS);
+	u32 Value = TEST_START_VALUE;
+
+	for(int idx = 0; idx < N32BITWORDS; idx++) {
+		////xil_printf("\r\nChecking RxData in ADR::DATA = 0x%x 0x%x", &dma_rx_buf[idx], dma_rx_buf[idx]);
+		//xil_printf("message[idx] = 0x%x\r\n", message[idx]);
+		if (message[idx] != Value) {
+			//xil_printf("\tData error ADR::IDX:: 0x%x %d %x %x\r\n",&dma_rx_buf[idx],
+				//	idx, (unsigned int)message[idx], (unsigned int)Value);
+			return XST_FAILURE;
+		}
+		Value = (Value + 1) & 0xFF;
+	}
+
+	//xil_printf("\r\nSuccessfully ran AXI DMA SG Polling Example\r\n");
+	return XST_SUCCESS;
+}
+
+
+
+

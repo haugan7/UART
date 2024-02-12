@@ -1,0 +1,23 @@
+{
+   "ExpandedHierarchyInLayout":"",
+   "PinnedPorts":"",
+   "guistr":"# # String gsaved with Nlview 7.0.19  2019-03-26 bk=1.5019 VDI=41 GEI=35 GUI=JA:9.0 non-TLS
+#  -string -flagsOSRD
+preplace port PWM_AXI8 -pg 1 -lvl 0 -x 0 -y 100 -defaultsOSRD
+preplace port S_AXI_ACLK -pg 1 -lvl 0 -x 0 -y 190 -defaultsOSRD
+preplace port S_AXI_ARESETN -pg 1 -lvl 0 -x 0 -y 220 -defaultsOSRD
+preplace port Intr -pg 1 -lvl 3 -x 570 -y 260 -defaultsOSRD
+preplace portBus pwm_base_counter -pg 1 -lvl 3 -x 570 -y 140 -defaultsOSRD
+preplace inst pwm -pg 1 -lvl 1 -x 180 -y 160 -defaultsOSRD
+preplace inst xlslice_2 -pg 1 -lvl 2 -x 450 -y 140 -defaultsOSRD
+preplace netloc processing_system7_0_FCLK_CLK0 1 0 1 20J 190n
+preplace netloc rst_ps7_0_100M_peripheral_aresetn 1 0 1 NJ 220
+preplace netloc pwm_2_intr 1 1 2 NJ 260 NJ
+preplace netloc pwm_synch_out 1 1 1 N 140
+preplace netloc xlslice_2_Dout 1 2 1 NJ 140
+preplace netloc axi_interconnect_0_M13_AXI 1 0 1 NJ 100
+levelinfo -pg 1 0 180 450 570
+pagesize -pg 1 -db -bbox -sgen -150 0 770 370
+"
+}
+0

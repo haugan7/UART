@@ -1,0 +1,55 @@
+
+#pragma once
+#include "HS_link_port.h" // OK
+#include "xaxidma.h" // OK
+
+#define CACHE_LINE_SIZE 32 // 32 byte for ARM A9 Buffer for transmit packet. Must be 32-bit aligned to be used by DMA.
+#define FIBER_DMA_NUM_INSTANCES 2
+
+#if XAXIDMA_BD_MINIMUM_ALIGNMENT <  CACHE_LINE_SIZE
+#define XAXIDMA_BD_ALIGNMENT   CACHE_LINE_SIZE
+#else
+#define XAXIDMA_BD_ALIGNMENT XAXIDMA_BD_MINIMUM_ALIGNMENT
+#endif
+
+#if XAXIDMA_BUFFER_ALIGNMENT < CACHE_LINE_SIZE
+#define XAXIDMA_BUFFER_ALIGNMENT CACHE_LINE_SIZE
+#endif
+
+#if XAXIDMA_BUFFER_ALIGNMENT < CACHE_LINE_SIZE
+  #define XAXIDMA_BUFFER_ALIGNMENT CACHE_LINE_SIZE
+#endif
+
+
+#define DMA_DEV_ID XPAR_AXIDMA_1_DEVICE_ID // Switch between loopback DMA and HSL DMA
+#define N32BITWORDS 32
+#define TEST_START_VALUE 0xC
+
+#ifndef NO_OF_HSL_TX_BUFFERS
+	#define NO_OF_HSL_TX_BUFFERS  32
+#endif
+#ifndef NO_OF_HSL_RX_BUFFERS
+	#define NO_OF_HSL_RX_BUFFERS  32
+#endif
+#ifndef HSL_BUFFER_SIZE
+	#define HSL_BUFFER_SIZE  32 // # of 32 bit words in Tx buffer and must be factor of XAXIDMA_BUFFER_ALIGNMENT
+	#define no_of_buffers HSL_BUFFER_SIZE
+#endif
+
+#define DMA_MAX_TRANSFER_LENGTH 	XAXIDMA_MCHAN_MAX_TRANSFER_LEN
+
+int DMA_port_init(uint32_t device_id);
+int RxSetup(uint32_t device_id, volatile XAxiDma_Bd* rx_buffer_descriptor_p, volatile uint32_t* rx_data_buffer_p, int N_of_rx_buffers, int rx_buffer_size);
+int TxSetup(uint32_t device_id, volatile XAxiDma_Bd* tx_buffer_descriptor_p, volatile uint32_t* tx_data_buffer_p, int N_of_tx_buffers, int tx_buffer_size);
+int SendPacket(uint32_t dma_port_device_id, volatile uint32_t* tx_data_p, uint32_t packet_size);
+int ReceivePacket(uint32_t dma_port_device_id, void* rx_handler_inst_p, int (*rx_packet_handler_routine_p)(void* rx_handler_inst_p, uint32_t* rx_buf_p, uint32_t packet_size));
+int dma_packet_handler(void* obj_inst_p, uint32_t* message, uint32_t packet_size);
+
+[[gnu::section(".dma_mem")]][[gnu::aligned(XAXIDMA_BD_ALIGNMENT)]] static XAxiDma dma_instance[FIBER_DMA_NUM_INSTANCES];
+[[gnu::section(".dma_mem")]][[gnu::aligned(XAXIDMA_BD_ALIGNMENT)]] static volatile XAxiDma_Bd dma_tx_buffer_descriptor[FIBER_DMA_NUM_INSTANCES][NO_OF_HSL_TX_BUFFERS];
+[[gnu::section(".dma_mem")]][[gnu::aligned(XAXIDMA_BD_ALIGNMENT)]] static volatile XAxiDma_Bd dma_rx_buffer_descriptor[FIBER_DMA_NUM_INSTANCES][NO_OF_HSL_RX_BUFFERS];
+[[gnu::section(".dma_mem")]][[gnu::aligned(XAXIDMA_BUFFER_ALIGNMENT)]] static volatile uint32_t dma_rx_buf[FIBER_DMA_NUM_INSTANCES][NO_OF_HSL_RX_BUFFERS][HSL_BUFFER_SIZE];
+[[gnu::section(".dma_mem")]][[gnu::aligned(XAXIDMA_BUFFER_ALIGNMENT)]] static volatile uint32_t dma_tx_buf[FIBER_DMA_NUM_INSTANCES][NO_OF_HSL_TX_BUFFERS][HSL_BUFFER_SIZE];
+
+
+

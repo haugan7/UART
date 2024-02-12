@@ -1,0 +1,10 @@
+/*
+ * Empty C++ Application
+ */
+
+#include "xilprintf.h"
+
+int main()
+{
+	return 0;
+}

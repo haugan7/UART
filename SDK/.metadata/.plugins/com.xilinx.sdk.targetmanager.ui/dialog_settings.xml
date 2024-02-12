@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<item value="Auto Detect" key="HSL_hw-device"/>
+	<item value="false" key="uart_hw-partial_bit"/>
+	<item value="" key="uart_hw-bmmFile"/>
+	<item value="uart_hw" key="programfpga.hwplatform"/>
+	<item value="" key="HSL_hw-bmmFile"/>
+	<item value="false" key="HSL_hw-partial_bit"/>
+	<item value="Local" key="HSL_hw-target"/>
+	<item value="design_1_wrapper.bit" key="uart_hw-bitFile"/>
+	<item value="design_1_wrapper.bit" key="HSL_hw-bitFile"/>
+	<item value="Local" key="uart_hw-target"/>
+	<item value="Auto Detect" key="uart_hw-device"/>
+</section>

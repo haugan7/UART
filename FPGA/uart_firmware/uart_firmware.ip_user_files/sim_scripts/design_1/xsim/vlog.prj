@@ -1,0 +1,117 @@
+verilog xil_defaultlib --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/ec67/hdl" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/8c62/hdl" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ip/design_1_processing_system7_0_0" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/1ddd/hdl/verilog" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/b2d0/hdl/verilog" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/8713/hdl" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/8936/hdl" \
+"../../../bd/design_1/ip/design_1_processing_system7_0_0/sim/design_1_processing_system7_0_0.v" \
+"../../../bd/design_1/ip/design_1_xbar_0/sim/design_1_xbar_0.v" \
+"../../../bd/design_1/ip/design_1_Aurora_status_concat_0_0/sim/design_1_Aurora_status_concat_0_0.v" \
+"../../../bd/design_1/ip/design_1_Aurora_status_concat_1_0/sim/design_1_Aurora_status_concat_1_0.v" \
+"../../../bd/design_1/ipshared/47a6/rtl/drp_bridge.v" \
+"../../../bd/design_1/ip/design_1_drp_bridge_0_0/sim/design_1_drp_bridge_0_0.v" \
+"../../../bd/design_1/ip/design_1_intr_ce_type_joint_0_0/sim/design_1_intr_ce_type_joint_0_0.v" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/sim/bd_afc3.v" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_0/sim/bd_afc3_one_0.v" \
+
+sv xil_defaultlib --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/ec67/hdl" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/8c62/hdl" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ip/design_1_processing_system7_0_0" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/1ddd/hdl/verilog" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/b2d0/hdl/verilog" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/8713/hdl" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/8936/hdl" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_4/sim/bd_afc3_arsw_0.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_5/sim/bd_afc3_rsw_0.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_6/sim/bd_afc3_awsw_0.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_7/sim/bd_afc3_wsw_0.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_8/sim/bd_afc3_bsw_0.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_9/sim/bd_afc3_s00mmu_0.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_10/sim/bd_afc3_s00tr_0.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_11/sim/bd_afc3_s00sic_0.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_12/sim/bd_afc3_s00a2s_0.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_13/sim/bd_afc3_sarn_0.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_14/sim/bd_afc3_srn_0.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_15/sim/bd_afc3_sawn_0.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_16/sim/bd_afc3_swn_0.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_17/sim/bd_afc3_sbn_0.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_18/sim/bd_afc3_s01mmu_0.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_19/sim/bd_afc3_s01tr_0.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_20/sim/bd_afc3_s01sic_0.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_21/sim/bd_afc3_s01a2s_0.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_22/sim/bd_afc3_sarn_1.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_23/sim/bd_afc3_srn_1.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_24/sim/bd_afc3_s02mmu_0.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_25/sim/bd_afc3_s02tr_0.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_26/sim/bd_afc3_s02sic_0.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_27/sim/bd_afc3_s02a2s_0.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_28/sim/bd_afc3_sawn_1.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_29/sim/bd_afc3_swn_1.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_30/sim/bd_afc3_sbn_1.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_31/sim/bd_afc3_m00s2a_0.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_32/sim/bd_afc3_m00arn_0.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_33/sim/bd_afc3_m00rn_0.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_34/sim/bd_afc3_m00awn_0.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_35/sim/bd_afc3_m00wn_0.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_36/sim/bd_afc3_m00bn_0.sv" \
+"../../../bd/design_1/ip/design_1_axi_smc_0/bd_0/ip/ip_37/sim/bd_afc3_m00e_0.sv" \
+
+verilog xil_defaultlib --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/ec67/hdl" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/8c62/hdl" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ip/design_1_processing_system7_0_0" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/1ddd/hdl/verilog" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/b2d0/hdl/verilog" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/8713/hdl" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/8936/hdl" \
+"../../../bd/design_1/ip/design_1_channel_up_n_0_0/sim/design_1_channel_up_n_0_0.v" \
+"../../../bd/design_1/ip/design_1_channel_up_n_1_0/sim/design_1_channel_up_n_1_0.v" \
+"../../../bd/design_1/ip/design_1_rx_lpm_en0_0/sim/design_1_rx_lpm_en0_0.v" \
+"../../../bd/design_1/ip/design_1_rx_lpm_en1_0/sim/design_1_rx_lpm_en1_0.v" \
+"../../../bd/design_1/ip/design_1_sys_reset_n_0_0/sim/design_1_sys_reset_n_0_0.v" \
+"../../../bd/design_1/ip/design_1_tvalid_0/sim/design_1_tvalid_0.v" \
+"../../../bd/design_1/ip/design_1_stuff_16_0_0_0/sim/design_1_stuff_16_0_0_0.v" \
+"../../../bd/design_1/ip/design_1_stuff_32_0_1_0/sim/design_1_stuff_32_0_1_0.v" \
+"../../../bd/design_1/ip/design_1_stuff_6_0_0_0/sim/design_1_stuff_6_0_0_0.v" \
+"../../../bd/design_1/ip/design_1_xlslice_0_0_0/sim/design_1_xlslice_0_0_0.v" \
+"../../../bd/design_1/ip/design_1_xlslice_1_1_0/sim/design_1_xlslice_1_1_0.v" \
+"../../../bd/design_1/ip/design_1_xlconcat_0_4/sim/design_1_xlconcat_0_4.v" \
+"../../../bd/design_1/ip/design_1_xlconcat_aurora_0_status_0/sim/design_1_xlconcat_aurora_0_status_0.v" \
+"../../../bd/design_1/ip/design_1_xlconstant_0_0/sim/design_1_xlconstant_0_0.v" \
+"../../../bd/design_1/ip/design_1_axis_data_fifo_0_0/sim/design_1_axis_data_fifo_0_0.v" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/sim/bd_48ac.v" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_0/sim/bd_48ac_one_0.v" \
+
+sv xil_defaultlib --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/ec67/hdl" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/8c62/hdl" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ip/design_1_processing_system7_0_0" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/1ddd/hdl/verilog" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/b2d0/hdl/verilog" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/8713/hdl" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/8936/hdl" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_2/sim/bd_48ac_arsw_0.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_3/sim/bd_48ac_rsw_0.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_4/sim/bd_48ac_awsw_0.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_5/sim/bd_48ac_wsw_0.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_6/sim/bd_48ac_bsw_0.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_7/sim/bd_48ac_s00mmu_0.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_8/sim/bd_48ac_s00tr_0.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_9/sim/bd_48ac_s00sic_0.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_10/sim/bd_48ac_s00a2s_0.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_11/sim/bd_48ac_sarn_0.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_12/sim/bd_48ac_srn_0.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_13/sim/bd_48ac_sawn_0.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_14/sim/bd_48ac_swn_0.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_15/sim/bd_48ac_sbn_0.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_16/sim/bd_48ac_s01mmu_0.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_17/sim/bd_48ac_s01tr_0.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_18/sim/bd_48ac_s01sic_0.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_19/sim/bd_48ac_s01a2s_0.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_20/sim/bd_48ac_sarn_1.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_21/sim/bd_48ac_srn_1.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_22/sim/bd_48ac_s02mmu_0.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_23/sim/bd_48ac_s02tr_0.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_24/sim/bd_48ac_s02sic_0.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_25/sim/bd_48ac_s02a2s_0.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_26/sim/bd_48ac_sawn_1.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_27/sim/bd_48ac_swn_1.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_28/sim/bd_48ac_sbn_1.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_29/sim/bd_48ac_m00s2a_0.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_30/sim/bd_48ac_m00arn_0.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_31/sim/bd_48ac_m00rn_0.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_32/sim/bd_48ac_m00awn_0.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_33/sim/bd_48ac_m00wn_0.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_34/sim/bd_48ac_m00bn_0.sv" \
+"../../../bd/design_1/ip/design_1_smartconnect_0_0/bd_0/ip/ip_35/sim/bd_48ac_m00e_0.sv" \
+
+verilog xil_defaultlib --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/ec67/hdl" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/8c62/hdl" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ip/design_1_processing_system7_0_0" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/1ddd/hdl/verilog" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/b2d0/hdl/verilog" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/8713/hdl" --include "../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/8936/hdl" \
+"../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/8936/hdl/emu_dc_axi_lite_interface_verilog.v" \
+"../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/8936/hdl/synth_reg.v" \
+"../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/8936/hdl/synth_reg_w_init.v" \
+"../../../../highspeed_link.srcs/sources_1/bd/design_1/ipshared/8936/hdl/convert_type.v" \
+"../../../bd/design_1/ip/design_1_emu_dc_0_0/sim/design_1_emu_dc_0_0.v" \
+"../../../bd/design_1/ip/design_1_xlconstant_1_0/sim/design_1_xlconstant_1_0.v" \
+"../../../bd/design_1/ip/design_1_xlconstant_2_0/sim/design_1_xlconstant_2_0.v" \
+"../../../bd/design_1/ip/design_1_xlslice_0_1/sim/design_1_xlslice_0_1.v" \
+"../../../bd/design_1/ip/design_1_xlconcat_0_5/sim/design_1_xlconcat_0_5.v" \
+"../../../bd/design_1/ip/design_1_auto_pc_0/sim/design_1_auto_pc_0.v" \
+
+verilog xil_defaultlib "glbl.v"
+
+nosort

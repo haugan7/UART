@@ -1,0 +1,15 @@
+/*
+ * Empty C++ Application
+ */
+
+#include "xil_printf.h"
+#include "stdlib.h"
+
+
+#define SUCCESS 0
+
+int main(void){
+
+
+	return SUCCESS;
+}
